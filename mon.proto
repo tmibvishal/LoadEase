@@ -1,0 +1,44 @@
+syntax = "proto3";
+
+option java_multiple_files = true;
+option java_package = "io.grpc.examples.Mon";
+option java_outer_classname = "Mon";
+option objc_class_prefix = "Mon";
+
+package monitoring;
+
+// Interface exported by the server.
+service Monitoring {
+  rpc GetStats(Void) returns (Stats) {}
+  rpc CreateTestVM(Void) returns (Pid) {}
+}
+
+message Pid {
+    int32 pid = 1;
+}
+
+message Void {}
+
+message Stats {
+    Stat mem = 1;
+    Stat cpu = 2;
+    Stat net = 3; 
+}
+
+message Stat {
+    HostStat host = 1;
+    repeated VmStat vms = 2;
+}
+
+message HostStat {
+    map<int32, float> histogram = 1;
+    repeated float timeseries = 2;
+}
+
+message VmStat {
+    string vm_id = 1;
+    map<int32, float> histogram = 2;
+    repeated float timeseries = 3;
+}
+
+

@@ -1,0 +1,119 @@
+<HTML>
+	<HEAD>
+		<!-- The Head tag is used to create a title of web page, CSS syntax for a web page, and helps in written a JavaScript code. -->
+		<title>
+			Resource Monitoring
+		</title>
+		<!--library for pie chart-->
+		<script src="https://cdn.anychart.com/releases/8.0.1/js/anychart-core.min.js"></script>
+		<script src="https://cdn.anychart.com/releases/8.0.1/js/anychart-pie.min.js"></script>
+		<style>
+			/* This tag is used to create a Cascading Style Sheet for displaying the attractive web page. */
+		</style>
+	</HEAD>
+	<BODY>
+		<!-- This tag align the text as center -->
+		<!-- The Body tag is used to display the content on a web page which is specify between the body tag.  -->
+		<!-- #######  THIS IS A COMMENT - Visible only in the source editor #########-->
+		<h2 style="text-align: center;">Host Resources Monitor!&nbsp;</h2>
+		<h3 style="text-align: center;"><strong>Average CPU Usage : {{avg_cpu_usage}} %&nbsp;</strong></h3>
+		<h3 style="text-align: center;"><strong>Total Memory Usage : {{mem_usage}} %</strong></h3>
+		<h3 style="text-align: center;"><strong>Total Net Usage : {{net_usage}} {{data_unit}}</strong></h3>
+		<!-- Pie chart for resources usage-->
+		<div id="chart_container" style="vertical-align:middle; margin: auto; width: 100%">
+			<div id="chart_cpu_container" style="width: 33%; display:inline-block;"></div>
+			<div id="chart_mem_container" style="width: 33%; display:inline-block;"></div>
+			<div id="chart_net_container" style="width: 33%; display:inline-block;"></div>	
+		</div>
+		
+		<table id="VMMonitorTable" style="border-color: rgba(0, 0, 0, 0.2); width:100%;" border="1" >
+			<caption><span style="color: #808080;"><strong>&nbsp;VM's Resource Usage</strong></span></caption>
+			<thead>
+				<tr>
+					<td><span style="background-color: #ffffff; color: #666699;"><strong>VM's ID</strong></span></td>
+					<td><span style="background-color: #ffffff; color: #666699;"><strong>CPU Usage</strong></span></td>
+					<td><span style="background-color: #ffffff; color: #666699;"><strong>Memory Usage</strong></span></td>
+					<td><span style="background-color: #ffffff; color: #666699;"><strong>Net Usage</strong></span></td>
+				</tr>
+			</thead>
+			<tbody></tbody>
+		</table>
+		<script>
+			var tbodyRef = document.getElementById('VMMonitorTable').getElementsByTagName('tbody')[0];
+			vms_id = {{vms_id}};
+			vms_cpu_usage = {{vms_cpu_usage}};
+			vms_mem_usage = {{vms_mem_usage}};
+			vms_net_usage = {{vms_net_usage}};
+			for (var i = 0; i < {{vm_num}}; i++)
+			{
+			    // Insert a row at the end of table
+			    var newRow = tbodyRef.insertRow();
+			    newRow.innerHTML = "<tr><td>"+vms_id[i]+"</td><td>"+vms_cpu_usage[i].toFixed(2)+" % </td><td>"+vms_mem_usage[i].toFixed(2)+" % </td><td>"+vms_net_usage[i]+" "+'{{data_unit}}'+" </td></tr>";
+			}
+			//pie chart display
+			var chart_cpu_uasage = [];
+			var chart_mem_usage = [];
+			var chart_net_usage = [];
+			for(var i = 0; i < {{vm_num}}; i++)
+			{
+				var item = { value: vms_cpu_usage[i], name: vms_id[i] };
+				chart_cpu_uasage.push(item);
+				item = { value: vms_mem_usage[i], name: vms_id[i] };
+				chart_mem_usage.push(item);
+				item = { value: vms_net_usage[i], name: vms_id[i] };
+				chart_net_usage.push(item);
+			}
+			var item = { value: 100-{{avg_cpu_usage}}, name: -1 };
+			chart_cpu_uasage.push(item);
+			//item = { value: 100-{{mem_usage}}, name: -1 };
+			//chart_mem_uasage.push(item);
+			//item = { value: 100-{{net_usage}}, name: -1 };
+			//chart_net_uasage.push(item);
+			// create the chart
+			var chart_cpu = anychart.pie();
+			// set the chart title
+			chart_cpu.title("CPU's usage (in %)");
+			// add the data
+			chart_cpu.data(chart_cpu_uasage);
+			// display the chart in the container
+			chart_cpu.container('chart_cpu_container');
+			chart_cpu.draw();
+			// set legend position
+			chart_cpu.legend().position("right");
+			// set items layout
+			chart_cpu.legend().itemsLayout("vertical");
+			// sort elements
+			chart_cpu.sort("desc");
+			chart_cpu.credits().enabled(false);
+			var chart_mem = anychart.pie();
+			// set the chart title
+			chart_mem.title("Memory Swapping's usage (in %)");
+			// add the data
+			chart_mem.data(chart_mem_usage);
+			// display the chart in the container
+			chart_mem.container('chart_mem_container');
+			chart_mem.draw();
+			// set legend position
+			chart_mem.legend().position("right");
+			// set items layout
+			chart_mem.legend().itemsLayout("vertical");
+			// sort elements
+			chart_mem.sort("desc");
+
+			var chart_net = anychart.pie();
+			// set the chart title
+			chart_net.title("Net's usage (in %)");
+			// add the data
+			chart_net.data(chart_net_usage);
+			// display the chart in the container
+			chart_net.container('chart_net_container');
+			chart_net.draw();
+			// set legend position
+			chart_net.legend().position("right");
+			// set items layout
+			chart_net.legend().itemsLayout("vertical");
+			// sort elements
+			chart_net.sort("desc");
+		</script>
+	</BODY>
+</HTML>
